@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://miaunolog.app/schemas/v1",
+  "title": "Miaunolog — model de date local v1",
+  "description": "Profiluri multiple nelimitate, jurnal, atașamente audio. Totul pe dispozitiv (localStorage / IndexedDB). Limba UI: ro.",
+  "version": "1.0.0",
+  "storage": {
+    "keys": {
+      "profiles": "miaunolog.profiles.v1",
+      "activeProfileId": "miaunolog.activeProfileId.v1",
+      "journal": "miaunolog.journal.v1",
+      "settings": "miaunolog.settings.v1"
+    },
+    "audio": {
+      "strategy": "IndexedDB blob store",
+      "dbName": "miaunolog-media",
+      "storeName": "clips",
+      "maxClipSeconds": 30,
+      "acceptedMime": ["audio/webm", "audio/mp4", "audio/ogg", "audio/wav", "audio/mpeg"]
+    }
+  },
+  "enums": {
+    "AgeBand": ["kitten", "adult", "senior"],
+    "Access": ["indoor", "outdoor", "both"],
+    "Mood": [
+      "solicitare",
+      "afectiune",
+      "alerta",
+      "frica",
+      "agresivitate",
+      "vanatoare",
+      "disconfort",
+      "calm",
+      "joaca",
+      "teritorial",
+      "durere"
+    ],
+    "Intensity": ["scazuta", "medie", "ridicata"],
+    "SoundId": [
+      "miau",
+      "miau-lung",
+      "silent",
+      "purr",
+      "trill",
+      "chirp",
+      "chatter",
+      "hiss",
+      "spit",
+      "growl",
+      "yowl",
+      "caterwaul",
+      "mew",
+      "shriek",
+      "sigh",
+      "gurgle"
+    ],
+    "BodyZone": ["ears", "tail", "eyes", "posture", "whiskers"]
+  },
+  "definitions": {
+    "AudioRef": {
+      "type": "object",
+      "required": ["id", "source", "createdAt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Cheie în IndexedDB (clips)"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["catalog", "user-record", "user-upload"],
+          "description": "catalog = exemplu licențiat/sinteză; user-* = proprietatea utilizatorului"
+        },
+        "mimeType": { "type": "string" },
+        "durationMs": { "type": "integer", "minimum": 0 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "label": {
+          "type": "string",
+          "description": "Etichetă scurtă, ex. „la ușă dimineața”"
+        },
+        "license": {
+          "type": ["string", "null"],
+          "description": "Doar pentru source=catalog: CC0, CC-BY-4.0, synthetic, etc."
+        }
+      },
+      "additionalProperties": false
+    },
+    "CatProfile": {
+      "type": "object",
+      "required": ["id", "name", "createdAt", "updatedAt"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "ageBand": {
+          "type": "string",
+          "enum": ["kitten", "adult", "senior"],
+          "default": "adult",
+          "description": "kitten = pui; adult; senior ≈ 10+ ani — afectează ponderile decoderului"
+        },
+        "birthYear": {
+          "type": ["integer", "null"],
+          "minimum": 1990,
+          "maximum": 2100
+        },
+        "sex": {
+          "type": ["string", "null"],
+          "enum": ["female", "male", "unknown", null]
+        },
+        "neutered": {
+          "type": ["boolean", "null"],
+          "description": "true = sterilizată/castrat; null = necunoscut"
+        },
+        "access": {
+          "type": "string",
+          "enum": ["indoor", "outdoor", "both"],
+          "default": "indoor"
+        },
+        "medicalNotes": {
+          "type": "string",
+          "maxLength": 2000,
+          "default": "",
+          "description": "Ex.: hipertiroidie, disfuncție cognitivă — nu e diagnostic, e context pentru ponderi"
+        },
+        "avatarColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Culoare UI, fără upload obligatoriu de poză"
+        },
+        "audioRefs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AudioRef" },
+          "description": "Clipuri atașate direct profilului (ex. „miau tipic la hrană”)"
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "DecodeInput": {
+      "type": "object",
+      "required": ["soundId"],
+      "properties": {
+        "soundId": { "type": "string" },
+        "ears": { "type": ["string", "null"] },
+        "tail": { "type": ["string", "null"] },
+        "eyes": { "type": ["string", "null"] },
+        "posture": { "type": ["string", "null"] },
+        "whiskers": { "type": ["string", "null"] },
+        "place": { "type": ["string", "null"] },
+        "moment": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "DecodeResultSnapshot": {
+      "type": "object",
+      "required": ["headline", "catVoice", "mood", "intensity", "confidence"],
+      "properties": {
+        "headline": { "type": "string" },
+        "catVoice": { "type": "string" },
+        "mood": { "type": "string" },
+        "intensity": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "explanation": { "type": "string" },
+        "care": { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "profileModifiersApplied": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ex.: [\"senior-nocturnal-yowl\", \"intact-caterwaul\"]"
+        }
+      },
+      "additionalProperties": false
+    },
+    "JournalEntry": {
+      "type": "object",
+      "required": ["id", "profileId", "createdAt", "input", "result"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "profileId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Pisica pentru care s-a făcut observația"
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "input": { "$ref": "#/definitions/DecodeInput" },
+        "result": { "$ref": "#/definitions/DecodeResultSnapshot" },
+        "notes": { "type": "string", "maxLength": 2000, "default": "" },
+        "audioRefs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AudioRef" },
+          "description": "Înregistrarea din momentul observației"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CatalogSoundAudio": {
+      "type": "object",
+      "required": ["soundId", "clips"],
+      "properties": {
+        "soundId": { "type": "string" },
+        "clips": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "url", "license", "label"],
+            "properties": {
+              "id": { "type": "string" },
+              "url": {
+                "type": "string",
+                "description": "Cale statică /public/sounds/... sau URL licențiat"
+              },
+              "license": {
+                "type": "string",
+                "enum": ["CC0", "CC-BY-4.0", "CC-BY-SA-4.0", "synthetic", "owned"]
+              },
+              "attribution": { "type": ["string", "null"] },
+              "label": { "type": "string" },
+              "durationMs": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "AppSettings": {
+      "type": "object",
+      "properties": {
+        "locale": { "type": "string", "default": "ro" },
+        "activeProfileId": { "type": ["string", "null"], "format": "uuid" },
+        "decoderShowProfileChip": { "type": "boolean", "default": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "profileModifiers": {
+    "description": "Reguli pe care decoderul le aplică când există profil activ",
+    "rules": [
+      {
+        "id": "senior-nocturnal-yowl",
+        "when": {
+          "ageBand": "senior",
+          "soundId": ["yowl", "miau-lung"],
+          "moment": "night"
+        },
+        "effect": "Crește prioritatea pe disconfort/durere/confuzie; adaugă warning veterinar; scade interpretarea „plictiseală”"
+      },
+      {
+        "id": "intact-caterwaul",
+        "when": { "neutered": false, "soundId": ["caterwaul", "yowl"] },
+        "effect": "Marchează context hormonal / reproducere; intensitate ridicată"
+      },
+      {
+        "id": "kitten-mew",
+        "when": { "ageBand": "kitten", "soundId": ["mew", "miau"] },
+        "effect": "Accent pe nevoie de contact, căldură, localizare"
+      },
+      {
+        "id": "indoor-door-meow",
+        "when": {
+          "access": "indoor",
+          "soundId": ["miau", "miau-lung"],
+          "place": "door"
+        },
+        "effect": "Preferă „acces la o cameră / zonă” față de „vrea afară”"
+      },
+      {
+        "id": "medical-notes-hint",
+        "when": { "medicalNotesNonEmpty": true, "soundId": ["yowl", "shriek", "purr"] },
+        "effect": "Adaugă tag „context medical notat”; nu diagnostichează"
+      }
+    ]
+  },
+  "examples": {
+    "profiles": [
+      {
+        "id": "a1111111-1111-4111-8111-111111111111",
+        "name": "Michi",
+        "ageBand": "senior",
+        "birthYear": 2012,
+        "sex": "female",
+        "neutered": true,
+        "access": "indoor",
+        "medicalNotes": "Suspiciune hipertiroidie — control anual",
+        "avatarColor": "#3E5248",
+        "audioRefs": [],
+        "createdAt": "2026-08-23T18:00:00.000Z",
+        "updatedAt": "2026-08-23T18:00:00.000Z"
+      },
+      {
+        "id": "b2222222-2222-4222-8222-222222222222",
+        "name": "Pufi",
+        "ageBand": "adult",
+        "birthYear": 2021,
+        "sex": "male",
+        "neutered": false,
+        "access": "both",
+        "medicalNotes": "",
+        "avatarColor": "#8B4A3F",
+        "audioRefs": [
+          {
+            "id": "c3333333-3333-4333-8333-333333333333",
+            "source": "user-record",
+            "mimeType": "audio/webm",
+            "durationMs": 2400,
+            "createdAt": "2026-08-20T07:12:00.000Z",
+            "label": "Miau la bol — dimineața",
+            "license": null
+          }
+        ],
+        "createdAt": "2026-08-23T18:05:00.000Z",
+        "updatedAt": "2026-08-23T18:05:00.000Z"
+      }
+    ],
+    "journalEntry": {
+      "id": "d4444444-4444-4444-8444-444444444444",
+      "profileId": "a1111111-1111-4111-8111-111111111111",
+      "createdAt": "2026-08-23T02:14:00.000Z",
+      "input": {
+        "soundId": "yowl",
+        "ears": "ears-side",
+        "tail": "tail-wrap",
+        "eyes": "eyes-dilated",
+        "posture": "post-loaf",
+        "whiskers": null,
+        "place": "bed",
+        "moment": "night"
+      },
+      "result": {
+        "headline": "Voce de noapte la senior — verifică, nu ignora",
+        "catVoice": "Sunt departe de bine. Cineva să audă.",
+        "mood": "disconfort",
+        "intensity": "ridicata",
+        "confidence": 0.86,
+        "explanation": "La o pisică senior, yowl-ul nocturn cântărește mai greu spre durere, confuzie sau boală metabolică decât spre plictiseală.",
+        "care": [
+          "Notează de când a început și cât durează",
+          "Programare veterinar dacă e nou sau se intensifică"
+        ],
+        "warnings": ["Nu o închide ca pedeapsă pentru zgomot"],
+        "tags": ["nocturn", "senior"],
+        "profileModifiersApplied": ["senior-nocturnal-yowl", "medical-notes-hint"]
+      },
+      "notes": "A treia noapte consecutiv, după 2:00.",
+      "audioRefs": [
+        {
+          "id": "e5555555-5555-4555-8555-555555555555",
+          "source": "user-record",
+          "mimeType": "audio/webm",
+          "durationMs": 5100,
+          "createdAt": "2026-08-23T02:14:30.000Z",
+          "label": "Yowl 02:14",
+          "license": null
+        }
+      ]
+    },
+    "catalogSoundAudio": {
+      "soundId": "purr",
+      "clips": [
+        {
+          "id": "purr-example-01",
+          "url": "/sounds/purr-cc0-01.webm",
+          "license": "CC0",
+          "attribution": null,
+          "label": "Toarcere continuă, aproape",
+          "durationMs": 4000
+        },
+        {
+          "id": "purr-synthetic-01",
+          "url": "/sounds/purr-synthetic-01.webm",
+          "license": "synthetic",
+          "attribution": "Miaunolog — aproximare, nu model real",
+          "label": "Aproximare sintetică (orientare)",
+          "durationMs": 3000
+        }
+      ]
+    },
+    "settings": {
+      "locale": "ro",
+      "activeProfileId": "a1111111-1111-4111-8111-111111111111",
+      "decoderShowProfileChip": true
+    }
+  },
+  "implementationNotes": [
+    "Profiluri: array nelimitat în localStorage; media grea doar în IndexedDB.",
+    "La ștergerea unui profil: șterge journal entries cu același profileId + blob-urile audio orfane.",
+    "Decoder: dacă activeProfileId e setat, aplică profileModifiers înainte de a afișa result; scrie profileModifiersApplied în snapshot.",
+    "Catalog audio: nu încărca fișiere fără license explicită; marchează synthetic vizibil în UI.",
+    "User audio: niciodată upload pe server în modul local-only; rămâne pe dispozitiv.",
+    "UUID: crypto.randomUUID() în browser.",
+    "Migrare: dacă lipsește profileId pe entry vechi, creează profil „Fără nume” sau cere alegere la primul open."
+  ]
+}
