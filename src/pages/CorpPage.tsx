@@ -5,10 +5,10 @@ export function CorpPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-sage">Atlas</p>
-        <h1 className="font-display mt-1 text-3xl font-semibold">Limbaj corporal</h1>
+        <h1 className="font-display mt-1 text-3xl font-semibold">Body language</h1>
         <p className="mt-2 max-w-xl text-ink-muted">
-          Vocea e doar o parte. Urechile, coada, ochii și postura completează mesajul — și pot
-          schimba complet interpretarea unui miau.
+          Voice is only part of it. Ears, tail, eyes, and posture complete the message — and can
+          completely change how a meow is read.
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">

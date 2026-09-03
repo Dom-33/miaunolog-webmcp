@@ -24,14 +24,14 @@ export function JurnalPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-sage">Observații</p>
-          <h1 className="font-display mt-1 text-3xl font-semibold">Jurnal</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-sage">Observations</p>
+          <h1 className="font-display mt-1 text-3xl font-semibold">Journal</h1>
         </div>
         <Link
           to="/"
           className="rounded-xl bg-sage px-4 py-2 text-sm font-semibold text-paper no-underline"
         >
-          Decoder nou
+          New decode
         </Link>
       </div>
 
@@ -43,7 +43,7 @@ export function JurnalPage() {
               !search.profile ? "border-sage bg-sage text-paper" : "border-line text-ink-muted"
             }`}
           >
-            Toate
+            All
           </Link>
           {profiles.map((p) => (
             <Link
@@ -64,7 +64,7 @@ export function JurnalPage() {
 
       {entries.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line py-12 text-center text-ink-muted">
-          Nicio observație încă. Rulează decoderul și salvează rezultatul.
+          No observations yet. Run the decoder and save the result.
         </div>
       ) : (
         <ul className="space-y-3">
@@ -73,9 +73,9 @@ export function JurnalPage() {
             return (
               <li key={e.id} className="rounded-2xl border border-line bg-paper-2/30 p-4">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-                  <time>{new Date(e.createdAt).toLocaleString("ro-RO")}</time>
+                  <time>{new Date(e.createdAt).toLocaleString("en-US")}</time>
                   <span>·</span>
-                  <span>{p?.name ?? "Fără profil"}</span>
+                  <span>{p?.name ?? "No profile"}</span>
                   <span>·</span>
                   <span>{label.sound(String(e.input.soundId))}</span>
                 </div>

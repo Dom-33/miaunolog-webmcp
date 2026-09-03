@@ -70,7 +70,7 @@ export function AscultaPage() {
 
     if (afterPermission && r.devices.length) {
       setDeviceMsg(
-        `Dispozitive detectate după permisiune: ${r.devices.length}. Alege microfonul din listă înainte de Rec.`,
+        `Devices detected after permission: ${r.devices.length}. Choose the microphone from the list before Rec.`,
       );
     }
   }
@@ -92,15 +92,15 @@ export function AscultaPage() {
     if (search.attach !== "profile") return;
     const p = targetProfile();
     if (!p) {
-      setInfo("Nu există profil activ — clipul e salvat local, dar nu e atașat.");
+      setInfo("No active profile — clip saved locally but not attached.");
       return;
     }
     upsertProfile({
       ...p,
-      audioRefs: [...p.audioRefs, { ...ref, label: ref.label ?? "Clip profil" }],
+      audioRefs: [...p.audioRefs, { ...ref, label: ref.label ?? "Profile clip" }],
       updatedAt: new Date().toISOString(),
     });
-    setInfo(`Clip atașat profilului „${p.name}”.`);
+    setInfo(`Clip attached to profile “${p.name}”.`);
   }
 
   async function start() {
@@ -112,7 +112,7 @@ export function AscultaPage() {
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
         setError(
-          "Acest browser nu suportă captură audio. Folosește „Încarcă fișier” cu o înregistrare de pe telefon.",
+          "This browser does not support audio capture. Use “Upload file” with a recording from your phone.",
         );
         return;
       }
@@ -131,7 +131,7 @@ export function AscultaPage() {
       const deviceId = selectedDeviceId;
       if (!deviceId) {
         setError(
-          "Nu este selectat niciun dispozitiv de intrare. Conectează un microfon sau folosește „Încarcă fișier”.",
+          "No input device selected. Connect a microphone or use “Upload file”.",
         );
         return;
       }
@@ -143,7 +143,7 @@ export function AscultaPage() {
       if (!stillThere) {
         setSelectedDeviceId(listed.devices[0]?.deviceId ?? "");
         setError(
-          "Dispozitivul selectat nu mai este disponibil (deconectat?). Alege din nou din listă.",
+          "The selected device is no longer available (disconnected?). Choose again from the list.",
         );
         if (listed.message) setDeviceMsg(listed.message);
         return;
@@ -165,7 +165,7 @@ export function AscultaPage() {
         const name = e instanceof DOMException ? e.name : "";
         if (name === "OverconstrainedError" || name === "NotFoundError") {
           setError(
-            "Dispozitivul ales nu poate fi deschis. Selectează alt input din listă sau reîncarcă pagina după ce conectezi microfonul.",
+            "The chosen device cannot be opened. Select another input or reload the page after connecting a microphone.",
           );
           await refreshDevices(true);
           return;
@@ -182,7 +182,7 @@ export function AscultaPage() {
       const usedLabel =
         track?.label ||
         listed.devices.find((d) => d.deviceId === usedId)?.label ||
-        "necunoscut";
+        "unknown";
       setActiveTrackLabel(usedLabel);
 
       // Monitor nivel real
@@ -217,7 +217,7 @@ export function AscultaPage() {
         // Avertisment pe semnal real, nu pe blob.size — nu blocăm salvarea
         if (peak < SILENCE_PEAK_THRESHOLD) {
           setWarning(
-            "Nu s-a detectat semnal audio util pe durata înregistrării (nivel aproape de zero). Verifică microfonul selectat, volumul de intrare Windows și că nu e ales „Stereo Mix” fără sursă. Clipul a fost totuși salvat — poți reda și verifica.",
+            "No useful audio signal was detected during recording (level near zero). Check the selected microphone, Windows input volume, and that “Stereo Mix” is not selected without a source. The clip was still saved — you can play it back to verify.",
           );
         } else {
           setWarning(null);
@@ -238,15 +238,15 @@ export function AscultaPage() {
       const name = e instanceof DOMException ? e.name : "";
       if (name === "NotFoundError" || name === "DevicesNotFoundError") {
         setError(
-          "Nu s-a găsit microfon. Conectează un microfon real sau folosește „Încarcă fișier”.",
+          "No microphone found. Connect a real microphone or use “Upload file”.",
         );
       } else if (name === "NotAllowedError" || name === "PermissionDeniedError") {
         setError(
-          "Permisiunea pentru microfon a fost refuzată. Activeaz-o în setările site-ului din browser.",
+          "Microphone permission was denied. Enable it in the site settings of your browser.",
         );
       } else {
         setError(
-          "Nu am putut porni captura. Verifică dispozitivul selectat sau încarcă un fișier audio.",
+          "Could not start capture. Check the selected device or upload an audio file.",
         );
       }
     }
@@ -268,9 +268,9 @@ export function AscultaPage() {
       if (playUrl) URL.revokeObjectURL(playUrl);
       setPlayUrl(URL.createObjectURL(file));
       await attachIfNeeded(ref);
-      setInfo(`Fișier salvat: ${file.name}`);
+      setInfo(`File saved: ${file.name}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Nu am putut încărca fișierul.");
+      setError(e instanceof Error ? e.message : "Could not upload the file.");
     }
   }
 
@@ -278,7 +278,7 @@ export function AscultaPage() {
     if (!lastRef) return;
     const blob = await getClipBlob(lastRef.id);
     if (!blob) {
-      setError("Clipul nu mai este în IndexedDB.");
+      setError("The clip is no longer in IndexedDB.");
       return;
     }
     if (playUrl) URL.revokeObjectURL(playUrl);
@@ -290,17 +290,17 @@ export function AscultaPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-sage">Laborator</p>
-        <h1 className="font-display mt-1 text-3xl font-semibold">Ascultă</h1>
+        <p className="text-xs font-medium uppercase tracking-wider text-sage">Lab</p>
+        <h1 className="font-display mt-1 text-3xl font-semibold">Listen</h1>
         <p className="mt-2 text-ink-muted">
-          Înregistrează sau încarcă un fișier cu vocea pisicii. Clipurile rămân pe acest dispozitiv
+          Record or upload a file of your cat’s voice. Clips stay on this device
           (IndexedDB).
         </p>
       </div>
 
       <div className="rounded-2xl border border-line bg-paper-2/40 p-4 text-sm">
         <label className="block font-medium text-ink" htmlFor="mic-select">
-          Dispozitiv de intrare
+          Input device
         </label>
         <select
           id="mic-select"
@@ -310,7 +310,7 @@ export function AscultaPage() {
           onChange={(e) => setSelectedDeviceId(e.target.value)}
         >
           {devices.length === 0 && (
-            <option value="">— niciun dispozitiv listat —</option>
+            <option value="">— no devices listed —</option>
           )}
           {devices.map((d) => (
             <option key={d.deviceId} value={d.deviceId}>
@@ -324,14 +324,14 @@ export function AscultaPage() {
           disabled={recording}
           onClick={() => void refreshDevices(false)}
         >
-          Reîmprospătează lista
+          Refresh list
         </button>
         {deviceMsg && (
           <p className="mt-2 text-xs leading-relaxed text-ink-muted">{deviceMsg}</p>
         )}
         {activeTrackLabel && recording && (
           <p className="mt-2 text-xs text-sage">
-            Înregistrare pe track: <strong>{activeTrackLabel}</strong>
+            Recording on track: <strong>{activeTrackLabel}</strong>
           </p>
         )}
       </div>
@@ -353,7 +353,7 @@ export function AscultaPage() {
             disabled={recording}
             className="rounded-xl border border-line bg-paper px-4 py-3 text-sm font-medium text-ink hover:border-sage disabled:opacity-50"
           >
-            Încarcă fișier
+            Upload file
           </button>
           <input
             ref={fileInputRef}
@@ -367,7 +367,7 @@ export function AscultaPage() {
         {recording && (
           <div className="mx-auto mt-4 max-w-xs">
             <div className="mb-1 flex justify-between text-[11px] text-ink-muted">
-              <span>Nivel semnal</span>
+              <span>Signal level</span>
               <span>{levelPct}%</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-paper">
@@ -381,8 +381,8 @@ export function AscultaPage() {
 
         <p className="mt-4 text-sm text-ink-muted">
           {recording
-            ? "Înregistrare în curs…"
-            : "Alege microfonul → Rec, sau Încarcă un fișier de pe telefon/PC"}
+            ? "Recording…"
+            : "Choose the microphone → Rec, or Upload a file from phone/PC"}
         </p>
         {error && (
           <p className="mt-3 rounded-lg border border-clay/40 bg-clay/5 px-3 py-2 text-left text-sm text-clay">
@@ -403,15 +403,15 @@ export function AscultaPage() {
 
       {lastRef && (
         <div className="rounded-2xl border border-line p-4">
-          <p className="text-sm font-medium text-ink">Ultimul clip salvat</p>
+          <p className="text-sm font-medium text-ink">Last saved clip</p>
           <p className="text-xs text-ink-muted">
             {lastRef.label ?? "Clip"} ·{" "}
-            {lastRef.source === "user-upload" ? "încărcat" : "înregistrat"} ·{" "}
+            {lastRef.source === "user-upload" ? "uploaded" : "recorded"} ·{" "}
             {lastRef.mimeType ?? "audio"}
           </p>
           {playUrl && <audio className="mt-3 w-full" controls src={playUrl} />}
           <button type="button" onClick={() => void replay()} className="mt-2 text-sm text-sage underline">
-            Reîncarcă din IndexedDB
+            Reload from IndexedDB
           </button>
         </div>
       )}

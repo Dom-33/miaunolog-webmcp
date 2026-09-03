@@ -33,19 +33,19 @@ function buildExplanation(input: DecodeInput, soundName: string, phonetic: strin
   const tail = labelFor("tail", input.tail);
   const eyes = labelFor("eyes", input.eyes);
   const posture = labelFor("posture", input.posture);
-  if (ears) observed.push(`urechi: ${ears.toLowerCase()}`);
-  if (tail) observed.push(`coadă: ${tail.toLowerCase()}`);
-  if (eyes) observed.push(`ochi: ${eyes.toLowerCase()}`);
-  if (posture) observed.push(`postură: ${posture.toLowerCase()}`);
+  if (ears) observed.push(`ears: ${ears.toLowerCase()}`);
+  if (tail) observed.push(`tail: ${tail.toLowerCase()}`);
+  if (eyes) observed.push(`eyes: ${eyes.toLowerCase()}`);
+  if (posture) observed.push(`posture: ${posture.toLowerCase()}`);
   if (observed.length) {
-    parts.push(`Observat: ${observed.join("; ")}.`);
+    parts.push(`Observed: ${observed.join("; ")}.`);
   } else {
     parts.push(
-      "Fără semnale corporale selectate — interpretarea se bazează pe vocalizare și context.",
+      "No body signals selected — interpretation is based on vocalization and context.",
     );
   }
-  if (input.place) parts.push(`Loc: ${label.place(input.place)}.`);
-  if (input.moment) parts.push(`Moment: ${label.moment(input.moment)}.`);
+  if (input.place) parts.push(`Place: ${label.place(input.place)}.`);
+  if (input.moment) parts.push(`Time: ${label.moment(input.moment)}.`);
   return parts.join(" ");
 }
 
@@ -53,12 +53,12 @@ function baseFromSound(soundId: string, input: DecodeInput): DecodeResult {
   const s = getSound(soundId);
   if (!s) {
     return {
-      headline: "Sunet necunoscut",
+      headline: "Unknown sound",
       catVoice: "…",
       mood: "alerta",
       intensity: "medie",
       confidence: 0.3,
-      explanation: "Alege un sunet din catalog.",
+      explanation: "Choose a sound from the catalog.",
       care: [],
       warnings: [],
       tags: [],
@@ -106,9 +106,9 @@ function applyBody(result: DecodeResult, input: DecodeInput): DecodeResult {
     r.mood = "frica";
     r.intensity = "ridicata";
     r.confidence = Math.min(1, r.confidence + 0.1);
-    r.headline = "Semnal defensiv — urechi pe spate / lipite";
-    r.catVoice = "Nu te apropia. Am nevoie de distanță.";
-    r.warnings!.push("Urechile pe spate sau lipite — dă-i spațiu.");
+    r.headline = "Defensive signal — ears back / flat";
+    r.catVoice = "Do not come closer. I need space.";
+    r.warnings!.push("Ears back or flat — give them space.");
     r.tags!.push("urechi-defensive", "risc-corporal");
   }
 
@@ -117,28 +117,28 @@ function applyBody(result: DecodeResult, input: DecodeInput): DecodeResult {
     r.intensity = "ridicata";
     r.confidence = Math.min(1, r.confidence + 0.08);
     if (!r.tags!.includes("risc-corporal")) {
-      r.headline = "Alarmă — coadă zburlită";
-      r.catVoice = "Sunt pe maxim de alertă.";
+      r.headline = "Alarm — puffed tail";
+      r.catVoice = "I am on maximum alert.";
     }
-    r.warnings!.push("Coadă zburlită — stare de alarmă.");
+    r.warnings!.push("Puffed tail — alarm state.");
     r.tags!.push("coada-alarma", "risc-corporal");
   }
 
   if (input.tail === "tail-tuck") {
     r.mood = "frica";
     r.intensity = "ridicata";
-    r.headline = "Frică — coadă retrasă";
-    r.catVoice = "Mă simt nesigură. Nu forța contactul.";
-    r.warnings!.push("Coadă între picioare — frică sau supunere.");
+    r.headline = "Fear — tucked tail";
+    r.catVoice = "I feel unsafe. Do not force contact.";
+    r.warnings!.push("Tail between legs — fear or submission.");
     r.tags!.push("coada-frica", "risc-corporal");
   }
 
   if (input.posture === "post-arch") {
     r.mood = "frica";
     r.intensity = "ridicata";
-    r.headline = "Postură de amenințare / frică";
-    r.catVoice = "Stai departe.";
-    r.warnings!.push("Corp arcuit — nu te apropia.");
+    r.headline = "Threat / fear posture";
+    r.catVoice = "Stay away.";
+    r.warnings!.push("Arched body — do not approach.");
     r.tags!.push("postura-defensiva", "risc-corporal");
   }
 
@@ -147,14 +147,14 @@ function applyBody(result: DecodeResult, input: DecodeInput): DecodeResult {
     r.intensity = r.intensity === "ridicata" ? "ridicata" : "medie";
     r.tags!.push("postura-ghemuita");
     if (defensive) {
-      r.warnings!.push("Postură ghemuită — tensiune.");
+      r.warnings!.push("Crouched posture — tension.");
     }
   }
 
   if (!defensive && input.eyes === "eyes-soft") {
     if (r.mood === "calm" || r.mood === "afectiune" || input.soundId === "purr") {
       r.mood = "afectiune";
-      r.catVoice = "Sunt bine lângă tine.";
+      r.catVoice = "I am okay next to you.";
       r.confidence = Math.min(1, r.confidence + 0.05);
       r.tags!.push("ochi-moi");
     }
@@ -169,7 +169,7 @@ function applyBody(result: DecodeResult, input: DecodeInput): DecodeResult {
     r.explanation = buildExplanation(input, s.name, s.phonetic);
     if (defensive) {
       r.explanation +=
-        " Semnalele corporale defensive au prioritate față de indiciile generice din catalog.";
+        " Defensive body signals take priority over generic catalog hints.";
     }
   }
 
@@ -191,18 +191,18 @@ function applyContext(result: DecodeResult, input: DecodeInput): DecodeResult {
   }
 
   if (input.place === "bowl" && (input.soundId === "miau" || input.soundId === "miau-lung")) {
-    r.headline = "Cerere legată de hrană";
-    r.catVoice = "Vreau mâncare (sau ritualul de hrană).";
+    r.headline = "Food-related request";
+    r.catVoice = "I want food (or the feeding ritual).";
     r.mood = "solicitare";
     r.tags!.push("hrana");
   }
   if (input.place === "door" && (input.soundId === "miau" || input.soundId === "miau-lung")) {
-    r.headline = "Cerere de acces";
-    r.catVoice = "Deschide — vreau dincolo.";
+    r.headline = "Access request";
+    r.catVoice = "Open up — I want through.";
     r.tags!.push("usa");
   }
   if (input.place === "window" && (input.soundId === "chirp" || input.soundId === "chatter")) {
-    r.headline = "Vânătoare la fereastră";
+    r.headline = "Hunting at the window";
     r.mood = "vanatoare";
   }
   if (input.moment === "night") {
@@ -235,21 +235,21 @@ function applyProfile(
   ) {
     mods.push("senior-nocturnal-yowl");
     r.tags!.push("senior");
-    r.care!.push("Notează de când a început și cât durează");
-    r.care!.push("Programare veterinar dacă e nou sau se intensifică");
-    r.warnings!.push("Nu o închide ca pedeapsă pentru zgomot");
+    r.care!.push("Note when it started and how long it lasts");
+    r.care!.push("See a vet if it is new or intensifying");
+    r.warnings!.push("Do not shut them away as punishment for noise");
     if (!defensive) {
-      r.headline = "Voce de noapte la senior — verifică, nu ignora";
-      r.catVoice = "Sunt departe de bine. Cineva să audă.";
+      r.headline = "Night voice in a senior — check, do not ignore";
+      r.catVoice = "I am far from okay. Someone please hear me.";
       r.mood = "disconfort";
       r.intensity = "ridicata";
       r.confidence = Math.max(r.confidence, 0.86);
       r.explanation =
         (r.explanation ? r.explanation + " " : "") +
-        "La o pisică senior, yowl-ul nocturn cântărește mai greu spre durere, confuzie sau boală metabolică decât spre plictiseală.";
+        "In a senior cat, nocturnal yowling weighs more toward pain, confusion, or metabolic disease than boredom.";
     } else {
       r.care!.push(
-        "Profil senior: chiar și cu semnal defensiv, yowl-ul nocturn merită notat pentru veterinar.",
+        "Senior profile: even with a defensive signal, nocturnal yowling is worth noting for the vet.",
       );
     }
   }
@@ -257,9 +257,9 @@ function applyProfile(
   if (profile.neutered === false && (input.soundId === "caterwaul" || input.soundId === "yowl")) {
     mods.push("intact-caterwaul");
     r.tags!.push("hormonal");
-    r.care!.push("Sterilizarea/castrarea reduce dramatic acest tip de vocalizare.");
+    r.care!.push("Neutering/spaying dramatically reduces this type of vocalization.");
     if (!defensive) {
-      r.headline = "Semnal hormonal / chemare";
+      r.headline = "Hormonal signal / call";
       r.mood = "teritorial";
       r.intensity = "ridicata";
     }
@@ -269,16 +269,16 @@ function applyProfile(
     mods.push("kitten-mew");
     r.tags!.push("pui");
     if (!defensive) {
-      r.headline = "Semnal de pui — contact și siguranță";
-      r.catVoice = "Am nevoie de căldură / pe cineva aproape.";
+      r.headline = "Kitten signal — contact and safety";
+      r.catVoice = "I need warmth / someone nearby.";
       r.mood = "solicitare";
     } else {
       r.care!.push(
-        "E pui: frica poate fi intensă — spațiu și calm, nu forța mângâierea.",
+        "Kitten: fear can be intense — space and calm; do not force petting.",
       );
       r.explanation =
         (r.explanation ?? "") +
-        " Profil pui: nu interpretăm ca cerere de contact cât timp corpul e defensiv.";
+        " Kitten profile: do not interpret as a contact request while the body is defensive.";
     }
   }
 
@@ -289,11 +289,11 @@ function applyProfile(
   ) {
     mods.push("indoor-door-meow");
     if (!defensive) {
-      r.headline = "Acces în casă (nu neapărat afară)";
-      r.catVoice = "Deschide ușa asta — vreau în altă zonă.";
+      r.headline = "Indoor access (not necessarily outdoors)";
+      r.catVoice = "Open this door — I want into another area.";
       r.explanation =
         (r.explanation ? r.explanation + " " : "") +
-        "Pisica e ținută indoor: miaunatul la ușă cere adesea o cameră, nu strada.";
+        "The cat is indoor-only: meowing at the door often asks for a room, not the street.";
     }
   }
 
@@ -304,7 +304,7 @@ function applyProfile(
     mods.push("medical-notes-hint");
     r.tags!.push("context-medical-notat");
     r.care!.push(
-      "Ai notat context medical pe profil — corelează cu simptomele, fără a diagnostica singur.",
+      "You noted medical context on the profile — correlate with symptoms; do not self-diagnose.",
     );
   }
 
@@ -331,21 +331,21 @@ export function decode(input: DecodeInput, profile: CatProfile | null = null): D
 
 export function moodLabel(m: string): string {
   const map: Record<string, string> = {
-    solicitare: "Solicitare",
-    afectiune: "Afecțiune",
-    alerta: "Alertă",
-    frica: "Frică",
-    agresivitate: "Agresivitate",
-    vanatoare: "Vânătoare",
-    disconfort: "Disconfort",
+    solicitare: "Request",
+    afectiune: "Affection",
+    alerta: "Alert",
+    frica: "Fear",
+    agresivitate: "Aggression",
+    vanatoare: "Hunting",
+    disconfort: "Discomfort",
     calm: "Calm",
-    joaca: "Joacă",
-    teritorial: "Teritorial",
-    durere: "Durere",
+    joaca: "Play",
+    teritorial: "Territorial",
+    durere: "Pain",
   };
   return map[m] ?? m;
 }
 
 export function intensityLabel(i: string): string {
-  return i === "ridicata" ? "Ridicată" : i === "medie" ? "Medie" : "Scăzută";
+  return i === "ridicata" ? "High" : i === "medie" ? "Medium" : "Low";
 }

@@ -24,8 +24,8 @@ const rootRoute = createRootRoute({
   ),
   notFoundComponent: () => (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
-      <h1 className="font-display text-2xl text-sage">Pagina nu există</h1>
-      <p className="mt-2 text-ink-muted">Întoarce-te la decoder sau la catalogul de sunete.</p>
+      <h1 className="font-display text-2xl text-sage">Page not found</h1>
+      <p className="mt-2 text-ink-muted">Go back to the decoder or the sound catalog.</p>
     </div>
   ),
 });

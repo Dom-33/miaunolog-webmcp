@@ -6,10 +6,10 @@ import { t } from "../lib/labels";
 
 const NAV = [
   { to: "/", label: "Decoder", match: (p: string) => p === "/" },
-  { to: "/sunete", label: "Sunete", match: (p: string) => p.startsWith("/sunete") },
-  { to: "/corp", label: "Corp", match: (p: string) => p === "/corp" },
-  { to: "/asculta", label: "Ascultă", match: (p: string) => p === "/asculta" },
-  { to: "/jurnal", label: "Jurnal", match: (p: string) => p === "/jurnal" },
+  { to: "/sunete", label: "Sounds", match: (p: string) => p.startsWith("/sunete") },
+  { to: "/corp", label: "Body", match: (p: string) => p === "/corp" },
+  { to: "/asculta", label: "Listen", match: (p: string) => p === "/asculta" },
+  { to: "/jurnal", label: "Journal", match: (p: string) => p === "/jurnal" },
   { to: "/webmcp", label: "WebMCP", match: (p: string) => p === "/webmcp" },
 ] as const;
 
@@ -63,7 +63,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   : "text-ink-muted hover:bg-paper-2 hover:text-ink"
               }`}
             >
-              Pisici
+              Cats
             </Link>
           </nav>
 

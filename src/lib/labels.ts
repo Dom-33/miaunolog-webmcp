@@ -8,7 +8,7 @@
 
 export type Locale = "ro" | "en";
 
-let currentLocale: Locale = "ro";
+let currentLocale: Locale = "en";
 
 export function setLocale(locale: Locale) {
   currentLocale = locale;
@@ -227,7 +227,7 @@ function lookup(table: Record<Locale, Dict>, key: string | null | undefined): st
   const found = loc[key] ?? table.ro[key];
   if (found != null && found !== "") return found;
   if (typeof import.meta !== "undefined" && import.meta.env?.DEV) {
-    console.warn(`[labels] lipsă etichetă pentru cheia internă: ${JSON.stringify(key)}`);
+    console.warn(`[labels] missing label for internal key: ${JSON.stringify(key)}`);
   }
   return MISSING;
 }
@@ -276,7 +276,7 @@ export const ui = {
       "Exemplele audio din catalog vor folosi doar înregistrări reale cu licență clară. Deocamdată nu există sample verificat pentru această vocalizare.",
   },
   en: {
-    noProfile: "No profile",
+    noProfile: "No active profile",
     active: "active",
     neuteredYes: "neutered",
     neuteredNo: "intact",

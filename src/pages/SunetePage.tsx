@@ -7,14 +7,14 @@ export function SunetePage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-sage">Catalog</p>
-        <h1 className="font-display mt-1 text-3xl font-semibold">Sunete</h1>
+        <h1 className="font-display mt-1 text-3xl font-semibold">Sounds</h1>
         <p className="mt-2 text-ink-muted">
-          16 tipuri de vocalizare, descrise textual.{" "}
-          {t("syntheticRemoved")} Pentru vocea pisicii tale, folosește{" "}
+          16 vocalization types, described in text.{" "}
+          {t("syntheticRemoved")} For your cat&apos;s real voice, use{" "}
           <Link to="/asculta" className="text-sage underline">
-            Ascultă
+            Listen
           </Link>{" "}
-          (înregistrare sau încărcare fișier).
+          (record or upload a file).
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -31,7 +31,7 @@ export function SunetePage() {
               params={{ id: s.id }}
               className="mt-3 text-sm font-medium text-sage no-underline hover:underline"
             >
-              Fișă completă →
+              Full card →
             </Link>
           </div>
         ))}

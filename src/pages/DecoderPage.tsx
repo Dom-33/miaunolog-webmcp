@@ -62,29 +62,29 @@ export function DecoderPage() {
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-sage">Decoder</p>
         <h1 className="font-display mt-1 text-3xl font-semibold text-ink">
-          Ce spune pisica?
+          What is the cat saying?
         </h1>
         <p className="mt-2 max-w-xl text-ink-muted">
-          Alege sunetul, completează corpul și contextul.{" "}
+          Choose the sound, then fill in body and context.{" "}
           {profile ? (
             <>
-              Citim ca pentru <strong className="text-ink">{profile.name}</strong>
+              Reading as for <strong className="text-ink">{profile.name}</strong>
               {profile.ageBand !== "adult" ? ` (${label.ageBand(profile.ageBand).toLowerCase()})` : ""}.
             </>
           ) : (
             <>
-              Fără profil activ —{" "}
+              No active profile —{" "}
               <Link to="/pisici" className="text-sage underline">
-                adaugă o pisică
+                add a cat
               </Link>{" "}
-              pentru ponderi personalizate.
+              for personalized weighting.
             </>
           )}
         </p>
       </div>
 
       <section className="rounded-2xl border border-line bg-paper-2/40 p-4">
-        <h2 className="text-sm font-semibold text-ink">1. Sunet</h2>
+        <h2 className="text-sm font-semibold text-ink">1. Sound</h2>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {SOUNDS.map((s) => (
             <button
@@ -107,14 +107,14 @@ export function DecoderPage() {
       </section>
 
       <section className="rounded-2xl border border-line bg-paper-2/40 p-4">
-        <h2 className="text-sm font-semibold text-ink">2. Corp (opțional)</h2>
+        <h2 className="text-sm font-semibold text-ink">2. Body (optional)</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
           {(
             [
-              ["Urechi", BODY_OPTIONS.ears, ears, setEars],
-              ["Coadă", BODY_OPTIONS.tail, tail, setTail],
-              ["Ochi", BODY_OPTIONS.eyes, eyes, setEyes],
-              ["Postură", BODY_OPTIONS.posture, posture, setPosture],
+              ["Ears", BODY_OPTIONS.ears, ears, setEars],
+              ["Tail", BODY_OPTIONS.tail, tail, setTail],
+              ["Eyes", BODY_OPTIONS.eyes, eyes, setEyes],
+              ["Posture", BODY_OPTIONS.posture, posture, setPosture],
             ] as const
           ).map(([label, opts, value, set]) => (
             <div key={label}>
@@ -141,10 +141,10 @@ export function DecoderPage() {
       </section>
 
       <section className="rounded-2xl border border-line bg-paper-2/40 p-4">
-        <h2 className="text-sm font-semibold text-ink">3. Context (opțional)</h2>
+        <h2 className="text-sm font-semibold text-ink">3. Context (optional)</h2>
         <div className="mt-3 flex flex-wrap gap-4">
           <div>
-            <div className="mb-1.5 text-xs font-medium text-ink-muted">Loc</div>
+            <div className="mb-1.5 text-xs font-medium text-ink-muted">Place</div>
             <div className="flex flex-wrap gap-1.5">
               {CONTEXT_PLACE.map((o) => (
                 <button
@@ -163,7 +163,7 @@ export function DecoderPage() {
             </div>
           </div>
           <div>
-            <div className="mb-1.5 text-xs font-medium text-ink-muted">Moment</div>
+            <div className="mb-1.5 text-xs font-medium text-ink-muted">Time</div>
             <div className="flex flex-wrap gap-1.5">
               {CONTEXT_MOMENT.map((o) => (
                 <button
@@ -189,7 +189,7 @@ export function DecoderPage() {
         onClick={runDecode}
         className="w-full rounded-xl bg-sage py-3 text-sm font-semibold text-paper hover:bg-sage-light sm:w-auto sm:px-8"
       >
-        Traduce
+        Interpret
       </button>
 
       {result && (
@@ -202,7 +202,7 @@ export function DecoderPage() {
               {label.intensity(String(result.intensity))}
             </span>
             <span className="text-ink-muted">
-              încredere {(result.confidence * 100).toFixed(0)}%
+              confidence {(result.confidence * 100).toFixed(0)}%
             </span>
           </div>
           <h2 className="font-display mt-3 text-2xl text-ink">{result.headline}</h2>
@@ -237,13 +237,13 @@ export function DecoderPage() {
               onClick={saveToJournal}
               className="rounded-lg border border-line bg-paper-2 px-4 py-2 text-sm font-medium text-ink"
             >
-              {saved ? "Salvat în jurnal" : "Salvează în jurnal"}
+              {saved ? "Saved to journal" : "Save to journal"}
             </button>
             <Link
               to="/jurnal"
               className="rounded-lg px-4 py-2 text-sm text-sage no-underline hover:underline"
             >
-              Vezi jurnalul
+              View journal
             </Link>
           </div>
         </article>

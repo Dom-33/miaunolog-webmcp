@@ -9,9 +9,9 @@ export function SuneteDetailPage() {
   if (!s) {
     return (
       <div className="py-12 text-center">
-        <p className="text-ink-muted">Sunet necunoscut.</p>
+        <p className="text-ink-muted">Unknown sound.</p>
         <Link to="/sunete" className="mt-2 inline-block text-sage">
-          Înapoi la catalog
+          Back to catalog
         </Link>
       </div>
     );
@@ -32,14 +32,14 @@ export function SuneteDetailPage() {
         {t("syntheticRemoved")}
       </p>
       <section className="rounded-2xl border border-line p-4">
-        <h2 className="text-sm font-semibold">Semnificație</h2>
+        <h2 className="text-sm font-semibold">Meaning</h2>
         <p className="mt-2 text-ink">{s.meaning}</p>
         <p className="mt-2 text-sm text-ink-muted">{s.summary}</p>
       </section>
       <section className="rounded-2xl border border-line p-4">
-        <h2 className="text-sm font-semibold">Indicii corporale (catalog)</h2>
+        <h2 className="text-sm font-semibold">Body cues (catalog)</h2>
         <p className="mt-1 text-xs text-ink-muted">
-          Orientative. În decoder, selecțiile tale corporale au prioritate.
+          Guidance only. In the decoder, your body selections take priority.
         </p>
         <ul className="mt-2 list-disc pl-5 text-sm text-ink-muted">
           {s.bodyHints.map((h) => (
@@ -48,7 +48,7 @@ export function SuneteDetailPage() {
         </ul>
       </section>
       <section className="rounded-2xl border border-line p-4">
-        <h2 className="text-sm font-semibold">Îngrijire / răspuns</h2>
+        <h2 className="text-sm font-semibold">Care / response</h2>
         <ul className="mt-2 list-disc pl-5 text-sm text-ink-muted">
           {s.care.map((c) => (
             <li key={c}>{c}</li>
@@ -60,7 +60,7 @@ export function SuneteDetailPage() {
         search={{ sunet: s.id } as { sunet?: string; profile?: string }}
         className="inline-flex rounded-xl bg-sage px-5 py-2.5 text-sm font-semibold text-paper no-underline"
       >
-        Folosește în decoder
+        Use in decoder
       </Link>
     </div>
   );

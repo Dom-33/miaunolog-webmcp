@@ -48,9 +48,9 @@ export function PisiciFormPage({ mode }: { mode: "create" | "edit" }) {
   if (mode === "edit" && !existing) {
     return (
       <div className="py-12 text-center text-ink-muted">
-        Profil negăsit.{" "}
+        Profile not found.{" "}
         <Link to="/pisici" className="text-sage">
-          Înapoi
+          Back
         </Link>
       </div>
     );
@@ -59,14 +59,14 @@ export function PisiciFormPage({ mode }: { mode: "create" | "edit" }) {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <Link to="/pisici" className="text-sm text-sage no-underline hover:underline">
-        ← Pisici
+        ← Cats
       </Link>
       <h1 className="font-display text-3xl font-semibold">
-        {mode === "create" ? "Pisică nouă" : "Editează profil"}
+        {mode === "create" ? "New cat" : "Edit profile"}
       </h1>
       <form onSubmit={submit} className="space-y-4">
         <label className="block">
-          <span className="text-xs font-medium text-ink-muted">Nume</span>
+          <span className="text-xs font-medium text-ink-muted">Name</span>
           <input
             className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-sage"
             value={name}
@@ -76,13 +76,13 @@ export function PisiciFormPage({ mode }: { mode: "create" | "edit" }) {
           />
         </label>
         <label className="block">
-          <span className="text-xs font-medium text-ink-muted">Vârstă</span>
+          <span className="text-xs font-medium text-ink-muted">Age band</span>
           <select
             className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2"
             value={ageBand}
             onChange={(e) => setAgeBand(e.target.value as AgeBand)}
           >
-            <option value="kitten">Pui</option>
+            <option value="kitten">Kitten</option>
             <option value="adult">Adult</option>
             <option value="senior">Senior (≈10+)</option>
           </select>
@@ -95,48 +95,48 @@ export function PisiciFormPage({ mode }: { mode: "create" | "edit" }) {
             onChange={(e) => setSex(e.target.value as Sex | "")}
           >
             <option value="">—</option>
-            <option value="female">Femă</option>
-            <option value="male">Mascul</option>
-            <option value="unknown">Necunoscut</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="unknown">Unknown</option>
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-medium text-ink-muted">Sterilizat / castrat</span>
+          <span className="text-xs font-medium text-ink-muted">Neutered / spayed</span>
           <select
             className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2"
             value={neutered}
             onChange={(e) => setNeutered(e.target.value)}
           >
-            <option value="unknown">Necunoscut</option>
-            <option value="yes">Da</option>
-            <option value="no">Nu</option>
+            <option value="unknown">Unknown</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-medium text-ink-muted">Acces</span>
+          <span className="text-xs font-medium text-ink-muted">Access</span>
           <select
             className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2"
             value={access}
             onChange={(e) => setAccess(e.target.value as Access)}
           >
-            <option value="indoor">Doar în casă</option>
-            <option value="outdoor">Iese afară</option>
-            <option value="both">Ambele</option>
+            <option value="indoor">Indoor only</option>
+            <option value="outdoor">Goes outdoors</option>
+            <option value="both">Both</option>
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-medium text-ink-muted">Note medicale (opțional)</span>
+          <span className="text-xs font-medium text-ink-muted">Medical notes (optional)</span>
           <textarea
             className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2 text-sm"
             rows={3}
             value={medicalNotes}
             onChange={(e) => setMedicalNotes(e.target.value)}
             maxLength={2000}
-            placeholder="Ex.: hipertiroidie — control anual"
+            placeholder="e.g. hyperthyroidism — annual checkup"
           />
         </label>
         <div>
-          <span className="text-xs font-medium text-ink-muted">Culoare</span>
+          <span className="text-xs font-medium text-ink-muted">Color</span>
           <div className="mt-2 flex gap-2">
             {COLORS.map((c) => (
               <button
@@ -155,7 +155,7 @@ export function PisiciFormPage({ mode }: { mode: "create" | "edit" }) {
           type="submit"
           className="w-full rounded-xl bg-sage py-3 text-sm font-semibold text-paper"
         >
-          Salvează
+          Save
         </button>
       </form>
     </div>

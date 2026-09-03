@@ -31,7 +31,7 @@ export async function saveClipBlob(blob: Blob): Promise<AudioRef> {
     mimeType: blob.type || "audio/webm",
     durationMs: undefined,
     createdAt: nowIso(),
-    label: "Înregistrare",
+    label: "Recording",
     license: null,
   };
 }
@@ -87,19 +87,19 @@ export function isAcceptedAudioFile(file: File): { ok: boolean; reason?: string 
   return {
     ok: false,
     reason:
-      "Format nesuportat sau nerecunoscut. Încearcă WebM, OGG, MP3, M4A, WAV (în funcție de browser).",
+      "Unsupported or unrecognized format. Try WebM, OGG, MP3, M4A, WAV (depending on the browser).",
   };
 }
 
 export async function saveUploadedFile(file: File): Promise<AudioRef> {
   const check = isAcceptedAudioFile(file);
-  if (!check.ok) throw new Error(check.reason ?? "Fișier invalid");
+  if (!check.ok) throw new Error(check.reason ?? "Invalid file");
   const ref = await saveClipBlob(file);
   return {
     ...ref,
     source: "user-upload",
     mimeType: file.type || ref.mimeType,
-    label: file.name.slice(0, 80) || "Fișier încărcat",
+    label: file.name.slice(0, 80) || "Uploaded file",
   };
 }
 
@@ -112,7 +112,7 @@ export async function listInputDevices(): Promise<{
     return {
       supported: false,
       devices: [],
-      message: "Browserul nu expune lista de dispozitive media.",
+      message: "The browser does not expose the media device list.",
     };
   }
   try {
@@ -122,14 +122,14 @@ export async function listInputDevices(): Promise<{
       .filter((d) => d.kind === "audioinput")
       .map((d, i) => ({
         deviceId: d.deviceId,
-        label: d.label || `Intrare audio ${i + 1}`,
+        label: d.label || `Audio input ${i + 1}`,
       }));
     if (inputs.length === 0) {
       return {
         supported: true,
         devices: [],
         message:
-          "Nu s-a detectat niciun dispozitiv de intrare (microfon). Pe Windows, „Stereo Mix” sau doar plăci de redare (ex. NVIDIA HD Audio) nu capturează voce — alege un microfon real în Setări sunet → Intrare.",
+          "No input device (microphone) detected. On Windows, “Stereo Mix” or playback-only devices (e.g. NVIDIA HD Audio) do not capture voice — choose a real microphone in Sound settings → Input.",
       };
     }
     return { supported: true, devices: inputs };
@@ -137,7 +137,7 @@ export async function listInputDevices(): Promise<{
     return {
       supported: false,
       devices: [],
-      message: "Nu am putut enumera dispozitivele. Verifică permisiunile browserului.",
+      message: "Could not enumerate devices. Check browser permissions.",
     };
   }
 }
@@ -261,7 +261,7 @@ export async function playSyntheticTone(kind: string): Promise<{ ok: boolean; re
   };
 
   if (kind === "silent" || spec.freq <= 0 || spec.dur <= 0) {
-    return { ok: false, reason: "Tăcere — fără ton de redare." };
+    return { ok: false, reason: "Silence — no playback tone." };
   }
 
   try {

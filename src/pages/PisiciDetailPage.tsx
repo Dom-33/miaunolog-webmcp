@@ -10,9 +10,9 @@ export function PisiciDetailPage() {
   if (!p) {
     return (
       <div className="py-12 text-center text-ink-muted">
-        Profil negăsit.{" "}
+        Profile not found.{" "}
         <Link to="/pisici" className="text-sage">
-          Înapoi
+          Back
         </Link>
       </div>
     );
@@ -21,7 +21,7 @@ export function PisiciDetailPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <Link to="/pisici" className="text-sm text-sage no-underline hover:underline">
-        ← Pisici
+        ← Cats
       </Link>
       <div className="flex items-center gap-4">
         <span
@@ -39,20 +39,20 @@ export function PisiciDetailPage() {
 
       {p.medicalNotes && (
         <section className="rounded-2xl border border-line p-4">
-          <h2 className="text-sm font-semibold">Note medicale</h2>
+          <h2 className="text-sm font-semibold">Medical notes</h2>
           <p className="mt-1 text-sm text-ink-muted">{p.medicalNotes}</p>
         </section>
       )}
 
       <section className="rounded-2xl border border-line p-4">
-        <h2 className="text-sm font-semibold">Audio pe profil</h2>
+        <h2 className="text-sm font-semibold">Audio on profile</h2>
         {p.audioRefs.length === 0 ? (
-          <p className="mt-2 text-sm text-ink-muted">Niciun clip atașat.</p>
+          <p className="mt-2 text-sm text-ink-muted">No clips attached.</p>
         ) : (
           <ul className="mt-2 space-y-1 text-sm text-ink-muted">
             {p.audioRefs.map((a) => (
               <li key={a.id}>
-                {a.label ?? "Clip"} · {new Date(a.createdAt).toLocaleString("ro-RO")}
+                {a.label ?? "Clip"} · {new Date(a.createdAt).toLocaleString("en-US")}
               </li>
             ))}
           </ul>
@@ -62,7 +62,7 @@ export function PisiciDetailPage() {
           search={{ profile: p.id, attach: "profile" }}
           className="mt-3 inline-block text-sm text-sage no-underline hover:underline"
         >
-          Înregistrează pentru acest profil →
+          Record for this profile →
         </Link>
       </section>
 
@@ -75,21 +75,21 @@ export function PisiciDetailPage() {
           }}
           className="rounded-xl bg-sage px-4 py-2 text-sm font-semibold text-paper"
         >
-          Activează în decoder
+          Activate in decoder
         </button>
         <Link
           to="/pisici/$id/edit"
           params={{ id: p.id }}
           className="rounded-xl border border-line px-4 py-2 text-sm no-underline text-ink"
         >
-          Editează
+          Edit
         </Link>
         <Link
           to="/jurnal"
           search={{ profile: p.id }}
           className="rounded-xl border border-line px-4 py-2 text-sm no-underline text-ink"
         >
-          Jurnalul ei
+          Their journal
         </Link>
       </div>
     </div>
